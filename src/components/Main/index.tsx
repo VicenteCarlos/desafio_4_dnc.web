@@ -1,19 +1,36 @@
 import { mocksTitle } from "@/mocks";
 import { useState } from "react";
-import { ModalOfDelete } from "../ModalOfDelete";
+import { ModalOfDelete } from "@/components/ModalOfDelete";
+import { ModalOfEdit } from "@/components/ModalOfEdit";
+import { IParamsEditTask } from "@/interfaces";
 
 export const Main = () => {
   const [tasks, setTasks] = useState<string[]>([]);
-  const [taskClicked, setTaskClicked] = useState<string>("");
   const [textTask, setTextTask] = useState<string>("");
+  const [taskClicked, setTaskClicked] = useState<string>("");
+  const [taskIndex, setTaskIndex] = useState<number | null>(null);
+
   const [modalTrashIsOpen, setModalTrashIsOpen] = useState<boolean>(false);
+  const [modalEditIsOpen, setModalEditIsOpen] = useState<boolean>(false);
 
   const addTask = (task: string) => setTasks([...tasks, task]);
 
   const trashTask = (task: string) =>
     setTasks(tasks.filter((currentTask) => currentTask !== task));
 
+  const editTask = ({ oldTaskIndex, newTask }: IParamsEditTask) =>
+    setTasks(
+      tasks.map((currentTask, i) => {
+        if (newTask.length === 0) {
+          return currentTask;
+        }
+
+        return i === oldTaskIndex ? newTask : currentTask;
+      })
+    );
+
   const handleModalTrash = () => setModalTrashIsOpen(!modalTrashIsOpen);
+  const handleModalEdit = () => setModalEditIsOpen(!modalEditIsOpen);
 
   return (
     <main className="w-screen">
@@ -27,7 +44,10 @@ export const Main = () => {
         <div id="to-do-list" className="w-[43%] mt-[11.25rem]">
           <div className="flex justify-between items-center border-b-[0.375rem] border-t-0 border-l-0 border-r-0 border-solid border-white pb-[0.875rem]">
             {mocksTitle.map((title, i) => (
-              <span key={`title-${++i}`} className="text-[1.875rem] font-[600]">
+              <span
+                key={`title-${i + 1}`}
+                className="text-[1.875rem] font-[600]"
+              >
                 {title}
               </span>
             ))}
@@ -35,7 +55,7 @@ export const Main = () => {
           <div id="list-items" className="mt-[2.063rem]">
             {tasks.map((task, i) => (
               <div
-                key={`task-${++i}`}
+                key={`task-${i + 1}`}
                 className="flex items-center justify-between w-[100%]"
               >
                 <span className="w-[30%] text-[1.563rem] font-[200]">
@@ -43,7 +63,13 @@ export const Main = () => {
                 </span>
                 <input type="checkbox" className="h-4 w-4 mr-[7rem]" />
                 <div className=" flex items-center">
-                  <button className="ml-[0.313rem]">
+                  <button
+                    className="ml-[0.313rem]"
+                    onClick={() => {
+                      setTaskIndex(i);
+                      handleModalEdit();
+                    }}
+                  >
                     <img src="../../../public/svg/laps.svg" alt="#" />
                   </button>
                   <button
@@ -87,6 +113,13 @@ export const Main = () => {
             handleModalTrash={handleModalTrash}
             trashTask={trashTask}
             taskClicked={taskClicked}
+          />
+        )}
+        {modalEditIsOpen && (
+          <ModalOfEdit
+            handleModalEdit={handleModalEdit}
+            editTask={editTask}
+            taskIndex={taskIndex}
           />
         )}
       </div>
