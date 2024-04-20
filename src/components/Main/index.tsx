@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ModalOfDelete } from "@/components/ModalOfDelete";
 import { ModalOfEdit } from "@/components/ModalOfEdit";
 import { IParamsEditTask } from "@/interfaces";
+import { toast } from "react-toastify";
 
 export const Main = () => {
   const [tasks, setTasks] = useState<string[]>([]);
@@ -13,21 +14,62 @@ export const Main = () => {
   const [modalTrashIsOpen, setModalTrashIsOpen] = useState<boolean>(false);
   const [modalEditIsOpen, setModalEditIsOpen] = useState<boolean>(false);
 
-  const addTask = (task: string) => setTasks([...tasks, task]);
+  const addTask = (task: string) => {
+    try {
+      setTasks([...tasks, task]);
+      toast.success("Task Adicionada!", {
+        position: "top-center",
+        theme: "dark",
+      });
+    } catch (error) {
+      toast.error("Error! Verifique no console", {
+        position: "top-center",
+        theme: "dark",
+      });
+      console.log(`Error abaixo:\n ${error}`);
+    }
+  };
 
-  const trashTask = (task: string) =>
-    setTasks(tasks.filter((currentTask) => currentTask !== task));
+  const trashTask = (task: string) => {
+    try {
+      setTasks(tasks.filter((currentTask) => currentTask !== task));
+      toast.success("Task Deletada!", {
+        position: "top-center",
+        theme: "dark",
+      });
+    } catch (error) {
+      toast.error("Error! Verifique no console", {
+        position: "top-center",
+        theme: "dark",
+      });
+      console.log(`Error abaixo:\n ${error}`);
+    }
+  };
 
-  const editTask = ({ oldTaskIndex, newTask }: IParamsEditTask) =>
-    setTasks(
-      tasks.map((currentTask, i) => {
-        if (newTask.length === 0) {
-          return currentTask;
-        }
+  const editTask = ({ oldTaskIndex, newTask }: IParamsEditTask) => {
+    try {
+      setTasks(
+        tasks.map((currentTask, i) => {
+          if (newTask.length === 0) {
+            return currentTask;
+          }
 
-        return i === oldTaskIndex ? newTask : currentTask;
-      })
-    );
+          return i === oldTaskIndex ? newTask : currentTask;
+        })
+      );
+
+      toast.success("Task Editada!", {
+        position: "top-center",
+        theme: "dark",
+      });
+    } catch (error) {
+      toast.error("Error! Verifique no console", {
+        position: "top-center",
+        theme: "dark",
+      });
+      console.log(`Error abaixo:\n ${error}`);
+    }
+  };
 
   const handleModalTrash = () => setModalTrashIsOpen(!modalTrashIsOpen);
   const handleModalEdit = () => setModalEditIsOpen(!modalEditIsOpen);
